@@ -6,9 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/activity_main">
+    tools:context=".MainActivity">
 
 
     <ScrollView
@@ -34,6 +32,14 @@
                 android:text="RxJava普通使用方式一"
                 android:textSize="18sp" />
 
+            <Button
+                android:id="@+id/bt5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:text="RxJava链式调用"
+                android:textSize="18sp" />
 
             <Button
                 android:id="@+id/bt2"
@@ -41,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:padding="10dp"
-                android:text="RxJava使用方式二defer"
+                android:text="RxJavaDefer"
                 android:textSize="18sp" />
 
             <Button
@@ -53,66 +59,89 @@
                 android:text="RxJava简化订阅consumer"
                 android:textSize="18sp" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/bt40"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="开启Flowable"
+                    android:textSize="18sp" />
+
+                <Button
+                    android:id="@+id/bt41"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:padding="10dp"
+                    android:text="请求129个"
+                    android:textSize="18sp" />
+
+            </LinearLayout>
+
 
             <Button
-                android:id="@+id/bt4"
+                android:id="@+id/bt6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:padding="10dp"
-                android:text="RxJava使用方式flowable"
+                android:text="RxAndroid 切换线程"
                 android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/et1"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#FFFF4081" />
+            <Button
+                android:id="@+id/bt7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:text="RxAndroid Map"
+                android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/et2"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#dde081" />
+            <Button
+                android:id="@+id/bt8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:text="RxAndroid FlatMap/ConcatMap"
+                android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/et3"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#daff21" />
+            <Button
+                android:id="@+id/bt9"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:text="RxAndroid zip"
+                android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/et4"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#221113" />
+            <Button
+                android:id="@+id/bt10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:text="RxAndroid filter"
+                android:textSize="18sp" />
 
-            <EditText
-                android:id="@+id/et5"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#d21132" />
+            <Button
+                android:id="@+id/bt11"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:padding="10dp"
+                android:text="RxAndroid sample"
+                android:textSize="18sp" />
 
-
-            <EditText
-                android:id="@+id/et6"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#ff00ff" />
-
-
-            <EditText
-                android:id="@+id/et7"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="20dp"
-                android:background="#00ff00" />
         </LinearLayout>
     </ScrollView>
 
