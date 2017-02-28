@@ -1,6 +1,6 @@
 # RxAndroid的简单试用
 
-
+[Reactivex]: http://reactivex.io/intro.html
 
 RxAndroid 的简单试用 包含
 
