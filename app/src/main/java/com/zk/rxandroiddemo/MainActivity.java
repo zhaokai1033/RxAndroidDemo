@@ -21,6 +21,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
+import io.reactivex.ObservableTransformer;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void sample() {
 
-        Observable.create(
+        Disposable dis = Observable.create(
                 new ObservableOnSubscribe<Integer>() {
                     @Override
                     public void subscribe(ObservableEmitter<Integer> e) throws Exception {
@@ -147,9 +148,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }, new Consumer<Disposable>() {
                     @Override
                     public void accept(Disposable disposable) throws Exception {
-                        disposables.add(disposable);
+                        boolean flag = disposables.add(disposable);
+                        Log.d(TAG, "isAdd"+flag+"Disposable:" + disposable.isDisposed());
                     }
                 });
+        boolean flag = disposables.add(dis);
+        Log.d(TAG, "isAdd"+flag);
     }
 
 
@@ -165,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intList.clear();
         sb.delete(0, sb.length());
         sb.append("这是  1000 以内的质数：");
-        Observable.create(new ObservableOnSubscribe<Integer>() {
+        Disposable dis = Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> e) throws Exception {
                 localeTime1 = System.currentTimeMillis();
@@ -222,7 +226,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 sb.append(intList.toString()).append("\n").append("次数为：").append(time).append("\t个数为:").append(intList.size()).append("\t耗时：").append(localeTime2 - localeTime1);
                 Log.i(TAG, sb.toString());
             }
+        }, new Consumer<Disposable>() {
+            @Override
+            public void accept(Disposable disposable) throws Exception {
+                boolean flag = disposables.add(disposable);
+                Log.d(TAG, "isAdd"+flag+"Disposable:" + disposable.isDisposed());
+            }
         });
+        disposables.add(dis);
     }
 
     /**
@@ -270,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 return s;
             }
         }).subscribeOn(Schedulers.io());
-        Observable
+        Disposable dis = Observable
                 .zip(observable1, observable2, new BiFunction<String, String, String>() {
                     @Override
                     public String apply(String s1, String s2) throws Exception {
@@ -296,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.d(TAG, "结束 ");
                     }
                 });
+        disposables.add(dis);
 
     }
 
@@ -304,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 如果需要 保证顺序可以使用 concatMap
      */
     private void flatMap() {
-        Observable.create(
+        Disposable dis = Observable.create(
                 new ObservableOnSubscribe<Integer>() {
                     @Override
                     public void subscribe(ObservableEmitter<Integer> e) throws Exception {
@@ -327,11 +339,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 })
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.single()).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                Log.d(TAG, "接受的结果：" + s);
-            }
-        });
+                    @Override
+                    public void accept(String s) throws Exception {
+                        Log.d(TAG, "接受的结果：" + s);
+                    }
+                });
+        disposables.add(dis);
     }
 
     /**
@@ -339,7 +352,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 函数发生与分发处理在一个线程
      */
     private void map() {
-        Observable.create(
+        Disposable dis = Observable.create(
                 new ObservableOnSubscribe<Integer>() {
                     @Override
                     public void subscribe(ObservableEmitter<Integer> e) throws Exception {
@@ -388,7 +401,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void accept(Throwable throwable) throws Exception {
                         Log.d(TAG, "此处接收错误\n" + Thread.currentThread().getName() + "\n" + throwable.getLocalizedMessage());
                     }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG,"Map complete");
+                    }
+                }, new Consumer<Disposable>() {
+                    @Override
+                    public void accept(Disposable disposable) throws Exception {
+                        boolean flag = disposables.add(disposable);
+                        Log.d(TAG, "Map act isAdd "+flag +" dis_size "+disposables.size());
+                    }
                 });
+        boolean flag = disposables.add(dis);
+        Log.d(TAG, "Map isAdd "+flag+" dis_size "+disposables.size());
     }
 
     /**
@@ -398,16 +424,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 相对于单个接受者来说，事件顺序是一定的
      */
     private void threadScheduler() {
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> e) throws Exception {
-                Log.d(TAG, "分发：" + "\tThread Name:" + Thread.currentThread().getName());
-                e.onNext(1);
-                SystemClock.sleep(1000);
-                e.onNext(2);
-                e.onComplete();
-            }
-        })
+        Disposable dis = Observable.create(
+                new ObservableOnSubscribe<Integer>() {
+                    @Override
+                    public void subscribe(ObservableEmitter<Integer> e) throws Exception {
+                        Log.d(TAG, "分发：" + "\tThread Name:" + Thread.currentThread().getName());
+                        e.onNext(1);
+                        SystemClock.sleep(1000);
+                        e.onNext(2);
+                        SystemClock.sleep(1000);
+                        e.onNext(3);
+                        e.onComplete();
+                    }
+                })
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())//切换到子线程接受事件
                 .doOnNext(new Consumer<Integer>() {
@@ -436,6 +465,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 "\tThread Name:" + Thread.currentThread().getName());
                     }
                 })
+                .doAfterTerminate(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG, "doAfterTerminate" +
+                                "\tThread Name:" + Thread.currentThread().getName());
+                    }
+                })
                 .observeOn(Schedulers.newThread())
                 .subscribe(new Consumer<Integer>() {
                     @Override
@@ -444,7 +480,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 "\tThread Name:" + Thread.currentThread().getName());
                         SystemClock.sleep(200);
                     }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "异常");
+                    }
+                }, new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.d(TAG,"结束");
+                    }
                 });
+        disposables.add(dis);
     }
 
     private Subscription flowableSubscription;
@@ -458,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //压测下的 事件处理  （需要Subscription.request(?)触发才会执行，简化订阅 默认触犯Long.MAX_VALUE）
     private void flowable1() {
-        Flowable.create(
+        Disposable dis = Flowable.create(
                 new FlowableOnSubscribe<Integer>() {
                     @Override
                     public void subscribe(FlowableEmitter<Integer> e) throws Exception {
@@ -505,6 +552,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         });
         Log.d(TAG, "Flowable 连接完成");
+        disposables.add(dis);
 
     }
 
@@ -517,7 +565,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         stringList.add("这");
         stringList.add("是");
         stringList.add("consumer");
-        Observable.fromArray(stringList.toArray(new String[3]))
+        Disposable dis = Observable.fromArray(stringList.toArray(new String[3]))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -546,11 +594,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new Consumer<Disposable>() {
                             @Override
                             public void accept(Disposable disposable) throws Exception {
-                                disposables.add(disposable);
-                                Log.d(TAG, "Disposable:" + disposable.isDisposed());
+                                boolean flag = disposables.add(disposable);
+                                Log.d(TAG, "isAdd"+flag+"Disposable:" + disposable.isDisposed());
                             }
                         }
                 );
+        disposables.add(dis);
     }
 
     //延迟调用
@@ -561,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //  Defer操作符只有当有Subscriber来订阅的时候才会创建一个新的Observable对象,
     // 也就是说每次订阅都会得到一个刚创建的最新的Observable对象，
     // 这可以确保Observable对象里的数据是最新的
-    static Observable<String> sampleDeferObservable() {
+    public Observable<String> sampleDeferObservable() {
         return Observable.defer(new Callable<ObservableSource<? extends String>>() {
             @Override
             public ObservableSource<? extends String> call() throws Exception {
@@ -600,6 +649,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 SystemClock.sleep(2000);
             }
         };
+        //订阅
+        sampleDeferObservable().subscribe(observer);
 
         disposables.add(observer);
     }
@@ -648,7 +699,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         };
 
         //观察者与被观察者联系并确定 事件处理及通知方式
-        observable
+        Observer<String> result = observable
                 //默认在什么位置开启 在什么位置处理事件.指定接受位置 则必须指定处理位置
                 .subscribeOn(Schedulers.computation())//事件在哪处理 线程控制器 一般使用 io (无上限线程池)
                 .observeOn(AndroidSchedulers.mainThread())//在哪通知到 线程控制器
@@ -668,8 +719,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }).subscribe(new Observer<Integer>() {
             @Override
             public void onSubscribe(Disposable d) {
-                disposables.add(d);
-                Log.d(TAG, "subscribe");
+                boolean flag = disposables.add(d);
+                Log.d(TAG, "subscribe isAdd " + flag);
             }
 
             @Override
