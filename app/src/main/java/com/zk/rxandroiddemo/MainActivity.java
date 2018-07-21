@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         disposables.clear();
     }
 
-    
     private void setClick() {
         findViewById(R.id.bt1).setOnClickListener(this);
         findViewById(R.id.bt2).setOnClickListener(this);
