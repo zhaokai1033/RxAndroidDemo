@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">RxAndroidDemo</string>
+<<<<<<< HEAD
+    <string name="app_name">RxAndroid</string>
+=======
+    <string name="app_name">RxAndroid示例</string>
+>>>>>>> e3e022f... 更新app名
 </resources>
